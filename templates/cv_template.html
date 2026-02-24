@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ name|default('CV', true) }} — CV</title>
+    <style>
+        /* ===== Print-friendly resume template (screenshot-style) ===== */
+        :root {
+            --blue: #2e74b5;
+            /* section header blue */
+            --text: #111;
+            --muted: #444;
+            --rule: #b9c6d3;
+            /* light rule line */
+        }
+
+        /* Page setup for printing to PDF */
+        @page {
+            size: A4;
+            margin: 12mm;
+        }
+
+        /* adjust if you want tighter margins */
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            background: #fff;
+            color: var(--text);
+            font-family: "Times New Roman", Times, serif;
+            font-size: 11.2pt;
+            line-height: 1.22;
+        }
+
+        .page {
+            max-width: 820px;
+            /* comfortable A4 width in-browser */
+            margin: 0 auto;
+            padding: 10px 6px 0;
+        }
+
+        /* ===== Header ===== */
+        .header {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .name {
+            font-size: 22pt;
+            font-weight: 700;
+            margin: 0 0 3px;
+            letter-spacing: .2px;
+        }
+
+        .contact {
+            font-size: 10.5pt;
+            color: var(--muted);
+            margin: 0;
+            display: inline-block;
+            white-space: nowrap;
+        }
+
+        .contact a {
+            color: var(--blue);
+            text-decoration: none;
+        }
+
+        .contact .sep {
+            margin: 0 8px;
+            color: var(--muted);
+        }
+
+        /* ===== Section headers ===== */
+        .section {
+            margin-top: 10px;
+        }
+
+        .section-title {
+            margin: 0;
+            color: var(--blue);
+            font-size: 12.8pt;
+            font-weight: 700;
+        }
+
+        .section-rule {
+            border: none;
+            border-top: 1px solid var(--rule);
+            margin: 2px 0 6px;
+        }
+
+        /* ===== Entry blocks ===== */
+        .entry {
+            margin-bottom: 7px;
+        }
+
+        /* Two-column alignment like the screenshot: left content + right (location/date) */
+        .entry-head {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            column-gap: 12px;
+            align-items: baseline;
+        }
+
+        .entry-left {
+            min-width: 0;
+        }
+
+        .entry-right {
+            text-align: right;
+            white-space: nowrap;
+            color: var(--muted);
+            font-style: italic;
+        }
+
+        .grade {
+            font-style: normal;
+            font-size: 10pt;
+            color: var(--muted);
+        }
+
+        .role {
+            font-weight: 700;
+        }
+
+        .org {
+            font-weight: 700;
+        }
+
+        .sub {
+            color: var(--muted);
+            margin-top: 1px;
+        }
+
+        /* Bullets tight like screenshot */
+        ul {
+            margin: 3px 0 0 18px;
+            padding: 0;
+        }
+
+        li {
+            margin: 1.5px 0;
+        }
+
+        /* Skills as compact rows */
+        .kv {
+            margin: 0;
+        }
+
+        .kv strong {
+            font-weight: 700;
+        }
+
+        /* Prevent awkward breaks when printing */
+        .section,
+        .entry {
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        /* Action Buttons */
+        .download-btn {
+            padding: 12px 24px;
+            font-size: 12pt;
+            cursor: pointer;
+            background-color: var(--blue);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .download-btn:hover {
+            background-color: #1e5282;
+        }
+
+        /* Hide button when printing normally via browser */
+        @media print {
+            .actions {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="actions" style="text-align: center; margin: 30px 0;">
+        <form method="POST" action="/download" style="margin: 0;">
+            <!-- Hidden inputs to pass data back to the server for PDF generation -->
+            <input type="hidden" name="name" value="{{ name }}">
+            <input type="hidden" name="phone" value="{{ phone }}">
+            <input type="hidden" name="email" value="{{ email }}">
+            <input type="hidden" name="linkedin" value="{{ linkedin }}">
+            <input type="hidden" name="skills" value="{{ skills }}">
+
+            {% for edu in education %}
+            <input type="hidden" name="edu_degree[]" value="{{ edu.degree }}">
+            <input type="hidden" name="edu_org[]" value="{{ edu.org }}">
+            <input type="hidden" name="edu_dates[]" value="{{ edu.dates }}">
+            <input type="hidden" name="edu_grade[]" value="{{ edu.grade }}">
+            {% endfor %}
+
+            {% for exp in experience %}
+            <input type="hidden" name="exp_role[]" value="{{ exp.role }}">
+            <input type="hidden" name="exp_org[]" value="{{ exp.org }}">
+            <input type="hidden" name="exp_dates[]" value="{{ exp.dates }}">
+            <input type="hidden" name="exp_desc[]" value="{{ '\n'.join(exp.description) }}">
+            {% endfor %}
+
+            {% for proj in projects %}
+            <input type="hidden" name="proj_title[]" value="{{ proj.title }}">
+            <input type="hidden" name="proj_dates[]" value="{{ proj.dates }}">
+            <input type="hidden" name="proj_desc[]" value="{{ '\n'.join(proj.description) }}">
+            {% endfor %}
+
+            <button type="submit" class="download-btn">
+                Download PDF
+            </button>
+        </form>
+    </div>
+    <main class="page">
+        <!-- ===== Header ===== -->
+        <header class="header">
+            <h1 class="name">{{ name }}</h1>
+            <p class="contact">
+                {% if phone %}<span>{{ phone }}</span>{% endif %}
+                {% if phone and email %}<span class="sep">|</span>{% endif %}
+                {% if email %}<a href="mailto:{{ email }}">{{ email }}</a>{% endif %}
+                {% if linkedin and (phone or email) %}<span class="sep">|</span>{% endif %}
+                {% if linkedin %}
+                <a href="{{ linkedin }}" target="_blank" rel="noreferrer">LinkedIn</a>
+                {% endif %}
+            </p>
+        </header>
+
+        <!-- ===== Education ===== -->
+        {% if education %}
+        <section class="section">
+            <h2 class="section-title">Education</h2>
+            <hr class="section-rule" />
+
+            {% for edu in education %}
+            <div class="entry">
+                <div class="entry-head">
+                    <div class="entry-left">
+                        <div>
+                            <span class="role">{{ edu.degree }}</span>
+                        </div>
+                        {% if edu.org %}
+                        <div class="sub">
+                            <span class="org">{{ edu.org }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="entry-right">
+                        <div>{{ edu.dates }}</div>
+                        {% if edu.grade %}
+                        <div class="grade">Grade: {{ edu.grade }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </section>
+        {% endif %}
+
+        <!-- ===== Working Experience ===== -->
+        {% if experience %}
+        <section class="section">
+            <h2 class="section-title">Working Experience</h2>
+            <hr class="section-rule" />
+
+            {% for exp in experience %}
+            <div class="entry">
+                <div class="entry-head">
+                    <div class="entry-left">
+                        <div><span class="role">{{ exp.role }}</span></div>
+                        {% if exp.org %}
+                        <div class="sub"><span class="org">{{ exp.org }}</span></div>
+                        {% endif %}
+                    </div>
+                    <div class="entry-right">{{ exp.dates }}</div>
+                </div>
+                {% if exp.description %}
+                <ul>
+                    {% for line in exp.description %}
+                    <li>{{ line|safe }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </section>
+        {% endif %}
+
+        <!-- ===== Projects ===== -->
+        {% if projects %}
+        <section class="section">
+            <h2 class="section-title">Projects</h2>
+            <hr class="section-rule" />
+
+            {% for proj in projects %}
+            <div class="entry">
+                <div class="entry-head">
+                    <div class="entry-left">
+                        <div><span class="role">{{ proj.title|safe }}</span></div>
+                    </div>
+                    <div class="entry-right">{{ proj.dates }}</div>
+                </div>
+                {% if proj.description %}
+                <ul>
+                    {% for line in proj.description %}
+                    <li>{{ line|safe }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </section>
+        {% endif %}
+
+        <!-- ===== Skills ===== -->
+        {% if skills %}
+        <section class="section">
+            <h2 class="section-title">Skills</h2>
+            <hr class="section-rule" />
+            {% for line in skills.split('\n') %}
+            {% if line.strip() %}
+            <p class="kv">{{ line|safe }}</p>
+            {% endif %}
+            {% endfor %}
+        </section>
+        {% endif %}
+    </main>
+
+    <script>
+        // No client-side PDF generation needed. Form submits to /download.
+    </script>
+</body>
+
+</html>

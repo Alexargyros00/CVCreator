@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CV Generator</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS for grid -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Feather Icons (cleaner than Material) -->
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        :root {
+            --bg-color: #f3f4f6;
+            /* slightly darker off-white for body to make cards pop */
+            --surface-color: #ffffff;
+            --border-color: #d1d5db;
+            /* stronger border */
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --danger: #ef4444;
+            --danger-bg: #fee2e2;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding-bottom: 80px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 800px;
+            margin-top: 60px;
+        }
+
+        .page-header {
+            margin-bottom: 40px;
+            border-bottom: 3px solid var(--text-main);
+            /* bolder header */
+            padding-bottom: 16px;
+        }
+
+        .page-title {
+            font-weight: 800;
+            font-size: 2.5rem;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            letter-spacing: -0.03em;
+        }
+
+        .page-subtitle {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            margin: 0;
+            font-weight: 500;
+        }
+
+        /* Clean Card System */
+        .glass-card {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            /* distinct block shadow */
+            margin-bottom: 40px;
+            /* more breathing room between blocks */
+            overflow: hidden;
+            transition: box-shadow 0.2s ease, transform 0.2s ease;
+        }
+
+        .glass-card:focus-within {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            /* lifted effect on focus */
+            border-color: #9ca3af;
+            transform: translateY(-2px);
+        }
+
+        .card-header-glass {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            background: #f8fafc;
+            /* slightly tinted header */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title-glass {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: -0.01em;
+        }
+
+        .card-title-glass i {
+            color: var(--primary);
+            /* accent color on icons */
+            width: 22px;
+            height: 22px;
+        }
+
+        .card-body-glass {
+            padding: 24px;
+        }
+
+        /* Form Inputs */
+        .form-label-custom {
+            font-weight: 500;
+            font-size: 0.875rem;
+            color: var(--text-main);
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .form-control-glass {
+            width: 100%;
+            padding: 10px 14px;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .form-control-glass:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-control-glass::placeholder {
+            color: #9ca3af;
+        }
+
+        textarea.form-control-glass {
+            resize: vertical;
+            min-height: 100px;
+            line-height: 1.5;
+        }
+
+        /* Dynamic Item Blocks */
+        .dynamic-item {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        /* Buttons */
+        .btn-custom-add {
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-weight: 500;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s ease;
+            cursor: pointer;
+        }
+
+        .btn-custom-add:hover {
+            background: #f3f4f6;
+            border-color: #d1d5db;
+        }
+
+        .btn-custom-add i {
+            width: 16px;
+            height: 16px;
+        }
+
+        .btn-custom-remove {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-custom-remove:hover {
+            background: var(--danger-bg);
+            color: var(--danger);
+            border-color: #fca5a5;
+        }
+
+        .btn-custom-remove i {
+            width: 16px;
+            height: 16px;
+        }
+
+        .btn-submit {
+            background: var(--text-main);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 14px 32px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background 0.2s ease;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .btn-submit:hover {
+            background: #000;
+        }
+
+        .help-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 6px;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Resume Builder</h1>
+            <p class="page-subtitle">Enter your details to generate a print-ready CV.</p>
+        </div>
+
+        <form method="POST" action="/download" target="_blank">
+
+            <!-- Personal Information -->
+            <div class="glass-card">
+                <div class="card-header-glass">
+                    <h2 class="card-title-glass"><i data-feather="user"></i> Personal Information</h2>
+                </div>
+                <div class="card-body-glass">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label-custom">Full Name</label>
+                            <input type="text" class="form-control-glass" name="name" required placeholder="John Doe">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-custom">Email Address</label>
+                            <input type="email" class="form-control-glass" name="email" required
+                                placeholder="johndoe@example.com">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-custom">Phone Number</label>
+                            <input type="text" class="form-control-glass" name="phone" placeholder="+1 555 123 4567">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-custom">LinkedIn URL</label>
+                            <input type="url" class="form-control-glass" name="linkedin"
+                                placeholder="https://linkedin.com/in/johndoe">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Education Section -->
+            <div class="glass-card">
+                <div class="card-header-glass">
+                    <h2 class="card-title-glass"><i data-feather="book-open"></i> Education</h2>
+                    <button type="button" class="btn-custom-add" onclick="addEducation()">
+                        <i data-feather="plus"></i> Add Degree
+                    </button>
+                </div>
+                <div class="card-body-glass" id="education-container">
+                    <!-- Dynamic items here -->
+                </div>
+            </div>
+
+            <!-- Working Experience Section -->
+            <div class="glass-card">
+                <div class="card-header-glass">
+                    <h2 class="card-title-glass"><i data-feather="briefcase"></i> Working Experience</h2>
+                    <button type="button" class="btn-custom-add" onclick="addExperience()">
+                        <i data-feather="plus"></i> Add Role
+                    </button>
+                </div>
+                <div class="card-body-glass" id="experience-container">
+                    <!-- Dynamic items here -->
+                </div>
+            </div>
+
+            <!-- Projects Section -->
+            <div class="glass-card">
+                <div class="card-header-glass">
+                    <h2 class="card-title-glass"><i data-feather="code"></i> Projects (Optional)
+                    </h2>
+                    <button type="button" class="btn-custom-add" onclick="addProject()">
+                        <i data-feather="plus"></i> Add Project
+                    </button>
+                </div>
+                <div class="card-body-glass" id="projects-container">
+                    <!-- Dynamic items here -->
+                </div>
+            </div>
+
+            <!-- Skills Section -->
+            <div class="glass-card">
+                <div class="card-header-glass">
+                    <h2 class="card-title-glass"><i data-feather="award"></i> Skills</h2>
+                </div>
+                <div class="card-body-glass">
+                    <label class="form-label-custom">Technical & Soft Skills</label>
+                    <textarea class="form-control-glass" name="skills" rows="5"
+                        placeholder="<strong>Programming:</strong> Python | Flask | SQL&#10;<strong>Language:</strong> Greek | English"></textarea>
+                    <span class="help-text">HTML tags are allowed. Enter each category on a new line. (Example:
+                        <code>&lt;strong&gt;Programming:&lt;/strong&gt; Python</code>)</span>
+                </div>
+            </div>
+
+            <div class="text-center pb-5">
+                <button type="submit" class="btn-submit">
+                    Generate CV <i data-feather="file-text"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Templates for Dynamic Rows -->
+    <template id="template-education">
+        <div class="dynamic-item">
+            <button type="button" class="btn-custom-remove" title="Remove" onclick="this.parentElement.remove()">
+                <i data-feather="x"></i>
+            </button>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <label class="form-label-custom">Degree / Title</label>
+                    <input type="text" class="form-control-glass" name="edu_degree[]"
+                        placeholder="BSc in Computer Science" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label-custom">Institution & Location</label>
+                    <input type="text" class="form-control-glass" name="edu_org[]"
+                        placeholder="State University — New York">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label-custom">Dates</label>
+                    <input type="text" class="form-control-glass" name="edu_dates[]" placeholder="Sep 2019 – Jun 2023">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label-custom">Grade / GPA (Optional)</label>
+                    <input type="text" class="form-control-glass" name="edu_grade[]" placeholder="3.8/4.0">
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="template-experience">
+        <div class="dynamic-item">
+            <button type="button" class="btn-custom-remove" title="Remove" onclick="this.parentElement.remove()">
+                <i data-feather="x"></i>
+            </button>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <label class="form-label-custom">Job Role</label>
+                    <input type="text" class="form-control-glass" name="exp_role[]" placeholder="Software Engineer"
+                        required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label-custom">Company & Location</label>
+                    <input type="text" class="form-control-glass" name="exp_org[]"
+                        placeholder="Acme Corp — San Francisco">
+                </div>
+                <div class="col-12">
+                    <label class="form-label-custom">Dates</label>
+                    <input type="text" class="form-control-glass" name="exp_dates[]" placeholder="Jan 2023 – Present">
+                </div>
+                <div class="col-12">
+                    <label class="form-label-custom">Description</label>
+                    <textarea class="form-control-glass" name="exp_desc[]" rows="4"
+                        placeholder="Built REST APIs using &lt;b&gt;Python&lt;/b&gt; and &lt;b&gt;Flask&lt;/b&gt;...&#10;Wrote unit tests and improved code coverage..."></textarea>
+                    <span class="help-text">Enter each bullet point on a new line. Bold text accepted:
+                        <code>&lt;b&gt;Python&lt;/b&gt;</code></span>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="template-project">
+        <div class="dynamic-item">
+            <button type="button" class="btn-custom-remove" title="Remove" onclick="this.parentElement.remove()">
+                <i data-feather="x"></i>
+            </button>
+            <div class="row g-4">
+                <div class="col-md-8">
+                    <label class="form-label-custom">Project Title</label>
+                    <input type="text" class="form-control-glass" name="proj_title[]"
+                        placeholder="E-Commerce App | React, Node.js" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label-custom">Dates</label>
+                    <input type="text" class="form-control-glass" name="proj_dates[]" placeholder="Mar 2022 – Jun 2022">
+                </div>
+                <div class="col-12">
+                    <label class="form-label-custom">Description</label>
+                    <textarea class="form-control-glass" name="proj_desc[]" rows="4"
+                        placeholder="Designed and built a full-stack shopping platform...&#10;Integrated payment processing with Stripe API..."></textarea>
+                    <span class="help-text">Enter each bullet point on a new line.</span>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script>
+        function renderIcons(container) {
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+        }
+
+        function addEducation() {
+            const container = document.getElementById('education-container');
+            const template = document.getElementById('template-education');
+            const clone = template.content.cloneNode(true);
+            container.appendChild(clone);
+            renderIcons();
+        }
+
+        function addExperience() {
+            const container = document.getElementById('experience-container');
+            const template = document.getElementById('template-experience');
+            const clone = template.content.cloneNode(true);
+            container.appendChild(clone);
+            renderIcons();
+        }
+
+        function addProject() {
+            const container = document.getElementById('projects-container');
+            const template = document.getElementById('template-project');
+            const clone = template.content.cloneNode(true);
+            container.appendChild(clone);
+            renderIcons();
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            addEducation();
+            addExperience();
+            renderIcons();
+        });
+    </script>
+</body>
+
+</html>
