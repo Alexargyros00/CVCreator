@@ -19,6 +19,7 @@ def download_pdf():
         'phone': request.form.get('phone', ''),
         'email': request.form.get('email', ''),
         'linkedin': request.form.get('linkedin', ''),
+        'github': request.form.get('github', ''),
         'skills': request.form.get('skills', ''),
     }
 

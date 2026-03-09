@@ -199,6 +199,7 @@
             <input type="hidden" name="phone" value="{{ phone }}">
             <input type="hidden" name="email" value="{{ email }}">
             <input type="hidden" name="linkedin" value="{{ linkedin }}">
+            <input type="hidden" name="github" value="{{ github }}">
             <input type="hidden" name="skills" value="{{ skills }}">
 
             {% for edu in education %}
@@ -237,6 +238,10 @@
                 {% if linkedin and (phone or email) %}<span class="sep">|</span>{% endif %}
                 {% if linkedin %}
                 <a href="{{ linkedin }}" target="_blank" rel="noreferrer">LinkedIn</a>
+                {% endif %}
+                {% if github and (phone or email or linkedin) %}<span class="sep">|</span>{% endif %}
+                {% if github %}
+                <a href="{{ github }}" target="_blank" rel="noreferrer">GitHub</a>
                 {% endif %}
             </p>
         </header>
