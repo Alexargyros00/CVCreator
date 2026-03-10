@@ -1,3 +1,4 @@
+import os
 from io import BytesIO
 from flask import Flask, render_template, request, send_file
 from playwright.sync_api import sync_playwright
@@ -115,5 +116,7 @@ def download_pdf():
     )
 
 if __name__ == '__main__':
-    # Start the server on port 5000
-    app.run(debug=False, port=5000)
+    # Keep local runs on loopback, but allow Docker to override the bind address.
+    host = os.getenv('FLASK_HOST', '127.0.0.1')
+    port = int(os.getenv('FLASK_PORT', '5000'))
+    app.run(debug=False, host=host, port=port)
